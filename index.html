@@ -21,7 +21,8 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-orange-50 flex items-center justify-center min-h-screen p-4">
+<!-- UPDATED: Switched to 'grid place-items-center' for more robust centering on all devices -->
+<body class="bg-orange-50 grid place-items-center min-h-screen p-4">
     <div class="bg-stone-50 rounded-2xl shadow-lg p-8 max-w-lg w-full text-center">
         <h1 class="text-3xl font-bold text-stone-800 mb-2 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-green-700" viewBox="0 0 20 20" fill="currentColor">
@@ -138,8 +139,7 @@
                 predictButton.disabled = false;
             }
         });
-
-        // --- NEW & MORE DIRECT IMAGE PROCESSING LOGIC ---
+        
         async function preprocessImage(imageElement) {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
@@ -152,13 +152,11 @@
 
                         const scale = 256.0 / Math.min(originalWidth, originalHeight);
                         
-                        // Calculate the size of the crop box on the original image
                         const cropSize = 224.0 / scale;
 
                         const cropX = (originalWidth - cropSize) / 2;
                         const cropY = (originalHeight - cropSize) / 2;
 
-                        // Draw the cropped and resized image onto the 224x224 canvas in one step
                         ctx.drawImage(imageElement, cropX, cropY, cropSize, cropSize, 0, 0, 224, 224);
                         
                         const imageData = ctx.getImageData(0, 0, 224, 224);
