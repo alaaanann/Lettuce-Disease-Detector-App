@@ -4,25 +4,27 @@ import torch.nn as nn
 from flask import Flask, request, render_template, jsonify
 from PIL import Image
 import io
-import os # <-- FIXED: Added the missing import
+import os
 
 # --- 1. INITIALIZE THE FLASK APP ---
 app = Flask(__name__)
 
-# --- 2. LOAD THE TRAINED MODEL (runs only once on startup) ---
-# This architecture MUST match the one you trained.
-try:
-    # Get class names from the training directory to ensure correct order
-    from torchvision.datasets import ImageFolder
-    train_dir = './train' 
-    if not os.path.isdir(train_dir):
-        raise FileNotFoundError("Could not find the './train' directory.")
-    
-    train_dataset = ImageFolder(train_dir)
-    CLASS_NAMES = train_dataset.classes
-    num_classes = len(CLASS_NAMES)
-    print(f"Model trained with {num_classes} classes: {CLASS_NAMES}")
+# --- 2. DEFINE MODEL PARAMETERS AND LOAD THE MODEL ---
+# This list is now hardcoded. It MUST match the order from your training.
+CLASS_NAMES = [
+    'Bacterial',
+    'Downy_mildew_on_lettuce',
+    'Healthy',
+    'Powdery_mildew_on_lettuce',
+    'Septoria_blight_on_lettuce',
+    'Shepherd_purse_weeds',
+    'Viral',
+    'Wilt_and_leaf_blight_on_lettuce',
+]
+num_classes = len(CLASS_NAMES)
+print(f"Model configured for {num_classes} classes: {CLASS_NAMES}")
 
+try:
     # Rebuild the model architecture
     model = models.mobilenet_v3_small(weights=None)
     last_layer_in_features = model.classifier[-1].in_features
@@ -36,9 +38,8 @@ try:
 except Exception as e:
     print(f"--- FATAL ERROR: Could not load the model. ---")
     print(f"Error details: {e}")
-    print("Please ensure 'lettuce_detector.pth' and the 'train' directory are in the same folder as this script.")
+    print("Please ensure 'lettuce_detector.pth' is in the same folder as this script.")
     model = None
-    CLASS_NAMES = []
 
 
 # --- 3. DEFINE THE IMAGE TRANSFORMATION PIPELINE ---
