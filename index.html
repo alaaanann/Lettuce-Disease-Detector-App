@@ -3,218 +3,466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leafy Green Lens: AI Lettuce Doctor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <title>Alaa Aldybous | ECE Portfolio</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Nunito', sans-serif; }
-        .loader {
-            border: 4px solid #fdfbf7;
-            border-top: 4px solid #b45309; 
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" rel="stylesheet">
+        
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@300;400;500;600;700&family=Homemade+Apple&display=swap" rel="stylesheet">
+    
+    <!-- Link to your external stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
 </head>
-<!-- UPDATED: Switched to 'flex items-start' with top padding to move the card higher on the screen -->
-<body class="bg-orange-50 flex justify-center items-start min-h-screen p-4 pt-12 md:pt-20">
-    <div class="bg-stone-50 rounded-2xl shadow-lg p-8 max-w-lg w-full text-center">
-        <h1 class="text-3xl font-bold text-stone-800 mb-2 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-green-700" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M11 3.055a1 1 0 00-2 0V4a1 1 0 002 0V3.055zM14.485 5.515a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM5.515 5.515a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zM12 10a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zM9 10a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zM7 10a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zM10 18a1 1 0 001-1v-2a1 1 0 10-2 0v2a1 1 0 001 1z" />
-            </svg>
-            Leafy Green Lens
-        </h1>
-        <p id="status-text" class="text-stone-600 mb-6">Loading AI model...</p>
+<body>
 
-        <div id="model-loader-status" class="flex items-center justify-center mb-4">
-            <div class="loader"></div>
-            <p class="ml-3 text-stone-600">Please wait, this may take a moment.</p>
-        </div>
-        
-        <div class="bg-orange-100 border-2 border-dashed border-amber-800/40 rounded-xl p-8 mb-6 cursor-pointer hover:bg-orange-200/60 transition-colors duration-300 hidden" id="upload-area">
-            <input type="file" id="image-upload" class="hidden" accept="image/*">
-            <label for="image-upload" class="cursor-pointer">
-                <svg class="mx-auto h-12 w-12 text-stone-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m_0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+<!-- Header / Navigation -->
+    <header class="site-header">
+        <nav class="main-nav container">
+            <!-- Hamburger Button (Visible on Mobile) -->
+            <button id="mobile-menu-button" class="mobile-menu-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
-                <p class="mt-2 text-sm text-stone-500"><span class="font-semibold text-amber-800">Click to upload an image</span></p>
-            </label>
-        </div>
+            </button>
 
-        <div id="image-preview-container" class="mb-6 hidden">
-            <img id="image-preview" src="#" alt="Image preview" class="max-w-full mx-auto rounded-lg shadow-md" style="max-height: 300px;"/>
-        </div>
-
-        <button id="predict-button" class="bg-amber-800 text-white font-bold py-3 px-6 rounded-xl w-full hover:bg-amber-900 transition duration-300 ease-in-out disabled:bg-stone-400 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg" disabled>
-            <span id="button-text">Analyze Lettuce Leaf</span>
-            <div id="button-loader" class="loader hidden ml-3"></div>
-        </button>
-
-        <div id="result-container" class="mt-8 text-left bg-orange-100/50 p-6 rounded-xl hidden border border-stone-200">
-            <h2 class="text-xl font-semibold text-stone-800 mb-4">Analysis Result</h2>
-            <div class="space-y-3">
-                <p class="text-stone-700 text-lg"><strong>Status:</strong> <span id="prediction-status" class="font-bold"></span></p>
-                <p class="text-stone-700 text-lg"><strong>Details:</strong> <span id="prediction-details"></span></p>
+            <!-- Navigation Links Container -->
+            <div id="main-nav-links" class="main-nav-links">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About me</a></li>
+                    <li><a href="#education">Education</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#papers">Papers</a></li>
+                    <li><a href="#contact">Contact me</a></li>
+                </ul>
             </div>
-        </div>
-    </div>
+        </nav>
+    </header>
 
-     <canvas id="canvas" width="224" height="224" class="hidden"></canvas>
+    <!-- Main Content Wrapper -->
+    <main class="container">
 
-    <script>
-        const statusText = document.getElementById('status-text');
-        const modelLoaderStatus = document.getElementById('model-loader-status');
-        const imageUpload = document.getElementById('image-upload');
-        const uploadArea = document.getElementById('upload-area');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
-        const imagePreview = document.getElementById('image-preview');
-        const predictButton = document.getElementById('predict-button');
-        const resultContainer = document.getElementById('result-container');
-        const predictionStatus = document.getElementById('prediction-status');
-        const predictionDetails = document.getElementById('prediction-details');
-        const buttonText = document.getElementById('button-text');
-        const buttonLoader = document.getElementById('button-loader');
-        
-        let model;
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Alaa Aldybous</h1>
+                <p class="hero-subtitle">Where engineering meets imagination</p>
+                <a href="#projects" class="hero-button">
+                    Explore my Portfolio
+                </a>
+            </div>
+            <div class="hero-image">
+                <!-- 
+                  PLACEHOLDER IMAGE: 
+                  Replace this with your main robot mascot image 
+                -->
+                <img src="https://placehold.co/400x400/FDF6EC/6D282C?text=Your+Robot+Mascot" alt="Alaa's robot mascot">
+            </div>
+        </section>
 
-        const CLASS_NAMES = [
-            'Bacterial', 'Downy_mildew_on_lettuce', 'Healthy', 'Powdery_mildew_on_lettuce',
-            'Septoria_blight_on_lettuce', 'Shepherd_purse_weeds', 'Viral', 'Wilt_and_leaf_blight_on_lettuce',
-        ];
+        <!-- About Me Section -->
+        <section id="about" class="site-section">
+            <h2 class="section-title">About me</h2>
+            <div class="about-content">
+                <div class="about-image">
+                    <!-- 
+                      PLACEHOLDER IMAGE: 
+                      Replace this with your robot + cat mascot image 
+                    -->
+                    <img src="https://placehold.co/400x450/FDF6EC/6D282C?text=Robot+%2B+Cat" alt="Mascot with cat">
+                </div>
+                <div class="about-text">
+                    <div class="about-description">
+                        <p>I'm an Electrical and Computer Engineering student merging analytical precision with creative design. I've developed data-driven systems in MATLAB and C++, published IEEE research, and led the IEEE Robotics and Automation Society chapter at my university.</p>
+                        <p>I love turning complex ideas into clear, practical solutions—whether in code, design, or leadership. Beyond tech, I draw, read fantasy and YA novels, watch K-dramas, and practice Taekwondo—keeping my balance between logic and imagination.</p>
+                        <p>I value clarity, purpose, and impact. To me, engineering is just another form of art.</p>
+                    </div>
+                    <div class="about-tags-container">
+                        <div class="about-tags-group">
+                            <span class="tags-label">Soft Skills:</span>
+                            <div class="tags-wrapper">
+                                <span class="tag tag-dark-pink">Leadership</span>
+                                <span class="tag tag-dark-pink">Problem Solving</span>
+                                <span class="tag tag-dark-pink">Team Management & Collaboration</span>
+                                <span class="tag tag-dark-pink">Presentation</span>
+                                <span class="tag tag-dark-pink">Project Planning</span>
+                                <span class="tag tag-dark-pink">Project Management</span>
+                            </div>
+                        </div>
+                        <div class="about-tags-group">
+                            <span class="tags-label">Interests:</span>
+                            <div class="tags-wrapper">
+                                <span class="tag tag-light-pink">Fantasy Books</span>
+                                <span class="tag tag-light-pink">Mystery Books</span>
+                                <span class="tag tag-light-pink">KDrama</span>
+                                <span class="tag tag-light-pink">Anime</span>
+                                <span class="tag tag-light-pink">Digital Art</span>
+                                <span class="tag tag-light-pink">Water Coloring</span>
+                                <span class="tag tag-light-pink">Taekwondo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        async function loadModel() {
-            try {
-                model = await ort.InferenceSession.create('./lettuce_detector.onnx');
-                console.log("Model loaded successfully.");
-                modelLoaderStatus.classList.add('hidden');
-                uploadArea.classList.remove('hidden');
-                statusText.innerText = "Upload an image of a lettuce leaf to classify its health.";
-            } catch (err) {
-                console.error("Failed to load the model.", err);
-                statusText.innerHTML = "<strong>Error:</strong> Could not load the model. <br>Please ensure 'lettuce_detector.onnx' is in the repository and the GitHub Pages site has finished deploying.";
-                statusText.classList.add('text-red-600');
-                modelLoaderStatus.classList.add('hidden');
-            }
-        }
+        <!-- Education Section -->
+        <section id="education" class="site-section">
+            <h2 class="section-title">Education</h2>
+            <div class="info-card-container">
+                <div class="info-card">
+                    <div class="info-card-bar bar-maroon"></div>
+                    <div class="info-card-logo">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with your university logo 
+                        -->
+                        <img src="effatlogo.png" alt="Effat University Logo">
+                    </div>
+                    <div class="info-card-content">
+                        <div class="info-card-header">
+                            <div>
+                                <h3 class="info-card-title">
+                                    <a href="https://www.effatuniversity.edu.sa/English/Pages/default.aspx" target="_blank" rel="noopener noreferrer">
+                                        Effat University
+                                    </a>
+                                </h3>
+                                <p class="info-card-subtitle">Bachelor's degree in Electrical & Computer Engineering</p>
+                            </div>
+                            <span class="info-card-date">2022 - 2027</span>
+                        </div>
+                        <ul class="info-card-list">
+                            <li>Achieved Effat College of Engineering's Dean's List for the academic years 2022-2023 & 2023-2024 & 2024-2025.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        imageUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imagePreview.src = e.target.result;
-                    imagePreviewContainer.classList.remove('hidden');
-                    predictButton.disabled = false;
-                    buttonText.innerText = 'Analyze Lettuce Leaf';
-                    resultContainer.classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        <!-- Experience Section -->
+        <section id="experience" class="site-section">
+            <h2 class="section-title">Experience</h2>
+            <div class="info-card-container">
+                <div class="info-card">
+                    <div class="info-card-bar bar-dark-pink"></div>
+                    <div class="info-card-logo">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with the IEEE RAS logo 
+                        -->
+                        <img src="ieeeroboticslogog.png" alt="IEEE RAS Logo" class="logo-ieee" style="width:max-content; height:3rem; padding: 0; margin: 0;">
+                    </div>
+                    <div class="info-card-content">
+                        <div class="info-card-header">
+                            <div>
+                                <h3 class="info-card-title">Chair, IEEE Robotics & Automation Society</h3>
+                                <p class="info-card-subtitle">Effat University IEEE Student Branch</p>
+                            </div>
+                            <span class="info-card-date">2025 - 2025</span>
+                        </div>
+                        <ul class="info-card-list">
+                            <li>Led and managed a team of 7 executive members to organize workshops and events.</li>
+                            <li>Organized a bristlebot activity for a university club fair.</li>
+                            <li>Coordinated with the engineering department for a robotics outreach event for a visiting school.</li>
+                            <li>Managed the club's budget and technical resources for projects.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        predictButton.addEventListener('click', async () => {
-            if (!model) { alert("Model is not loaded yet."); return; }
-            buttonText.innerText = 'Analyzing...';
-            buttonLoader.classList.remove('hidden');
-            predictButton.disabled = true;
-            try {
-                const preprocessedData = await preprocessImage(imagePreview);
-                const inputTensor = new ort.Tensor('float32', preprocessedData, [1, 3, 224, 224]);
-                const feeds = { 'input': inputTensor };
-                const results = await model.run(feeds);
-                const outputTensor = results.output.data;
-                displayResults(outputTensor);
-            } catch(e) {
-                console.error("--- DETAILED PREDICTION ERROR ---", e);
-                alert("An error occurred during prediction. Please check the browser's developer console for details.");
-            } finally {
-                buttonText.innerText = 'Analyze Lettuce Leaf';
-                buttonLoader.classList.add('hidden');
-                predictButton.disabled = false;
-            }
-        });
-        
-        async function preprocessImage(imageElement) {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
+        <!-- Skills Section -->
+        <section id="skills" class="site-section">
+            <h2 class="section-title">Skills</h2>
+            <div class="skills-card">
+                <div class="skills-card-content">
+                    <div class="skills-image">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with your skills robot mascot image 
+                        -->
+                        <img src="https://placehold.co/400x400/FAF3EB/6D282C?text=Robot+Mascot" alt="Mascot">
+                    </div>
+                    <div class="skills-grid-container">
+                        
+                        <div class="skills-grid">
+                            <span class="skills-grid-label">Software & Frameworks:</span>
+                            <div class="skills-grid-tags">
+                                <span class="tag tag-dark-pink">Simulink</span>
+                                <span class="tag tag-dark-pink">CassyLab</span>
+                                <span class="tag tag-dark-pink">PyTorch</span>
+                                <span class="tag tag-dark-pink">Scikit-learn</span>
+                                <span class="tag tag-dark-pink">Git & GitHub</span>
+                                <span class="tag tag-dark-pink">Microsoft Office</span>
+                                <span class="tag tag-dark-pink">Figma</span>
+                            </div>
+                        </div>
+
+                        <div class="skills-grid">
+                            <span class="skills-grid-label">Hardware & Lab Skills:</span>
+                            <div class="skills-grid-tags">
+                                <span class="tag tag-maroon">Raspberry Pi</span>
+                                <span class="tag tag-maroon">Oscilloscope</span>
+                                <span class="tag tag-maroon">Arduino</span>
+                                <span class="tag tag-maroon">Soldering</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skills-grid">
+                            <span class="skills-grid-label">Programming Languages:</span>
+                            <div class="skills-grid-tags">
+                                <span class="tag tag-light-pink">Python</span>
+                                <span class="tag tag-light-pink">C++</span>
+                                <span class="tag tag-light-pink">MATLAB</span>
+                                <span class="tag tag-light-pink">CSS</span>
+                                <span class="tag tag-light-pink">HTML</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="site-section">
+            <h2 class="section-title">Projects</h2>
             
-            return new Promise((resolve, reject) => {
-                imageElement.onload = () => {
-                    try {
-                        const originalWidth = imageElement.naturalWidth;
-                        const originalHeight = imageElement.naturalHeight;
+            <div class="projects-grid">
+                
+                <!-- Project Card 1 -->
+                <div class="project-card">
+                    <div class="project-card-image-wrapper bg-white">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with your Solar Cell project image 
+                        -->
+                        <img src="ivperformance.png" alt="I-V Performance Analysis of Solar Cells">
+                    </div>
+                    <div class="project-card-content">
+                        <h3 class="project-card-title">I-V Performance Analysis of Solar Cells Using Numerical Method</h3>
+                        <div class="project-card-tags">
+                            <span class="tag tag-maroon">2023</span>
+                            <span class="tag tag-maroon">C++</span>
+                            <span class="tag tag-dark-pink">Numerical Methods</span>
+                        </div>
+                        <p class="project-card-description">A web application developed using C++, Flask, and Python to analyze and visualize the I-V and P-V performance curves of an MSX-60 solar panel. The project utilizes the Newton-Raphson numerical method to accurately model power output under varying temperature and irradiance conditions.</p>
+                        <a href="#" class="project-card-link">View Project &rarr;</a>
+                    </div>
+                </div>
 
-                        const scale = 256.0 / Math.min(originalWidth, originalHeight);
+                <!-- Project Card 2 -->
+                <div class="project-card">
+                    <div class="project-card-image-wrapper bg-gray">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with your Wind Turbine project image 
+                        -->
+                        <img src="windoptimization.png" alt="Wind Turbine Optimization GUI" class="shadow-md">
+                    </div>
+                    <div class="project-card-content">
+                        <h3 class="project-card-title">Optimizing Wind Turbines for Maximum Power Generation</h3>
+                        <div class="project-card-tags">
+                            <span class="tag tag-maroon">2023</span>
+                            <span class="tag tag-dark-pink">MATLAB</span>
+                            <span class="tag tag-dark-pink">MATLAB App Designer</span>
+                            <span class="tag tag-dark-pink">Numerical Methods</span>
+                        </div>
+                        <p class="project-card-description">We developed an educational app to find the optimal operational parameters for maximum wind turbine efficiency. The tool visualizes complex data, serving as an interactive learning module for renewable energy.</p>
+                        <a href="optimizing_wind_turbine_project.html" class="project-card-link">View Project &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="project-card">
+                    <div class="project-card-image-wrapper bg-white">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with your AgriBird project image 
+                        -->
+                        <img src="agribird.png" alt="AgriBird Plant Disease Detector">
+                    </div>
+                    <div class="project-card-content">
+                        <h3 class="project-card-title">AgriBird: Plant Disease Detector</h3>
+                        <div class="project-card-tags">
+                            <span class="tag tag-maroon">2025</span>
+                            <span class="tag tag-dark-pink">Python</span>
+                            <span class="tag tag-dark-pink">AI</span>
+                        </div>
+                        <p class="project-card-description">A web application that uses AI to detect plant diseases from an uploaded image. (Enter your real description here!)</p>
+                        <a href="#" class="project-card-link">View Project &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 4 (Placeholder) -->
+                <div class="project-card">
+                    <div class="project-card-image-wrapper bg-dark-gray">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Replace this with your Data Science project image 
+                        -->
+                        <img src="https://placehold.co/600x400/374151/FFFFFF?text=Data+Science+Viz" alt="Data Science Project">
+                    </div>
+                    <div class="project-card-content">
+                        <h3 class="project-card-title">Data Science</h3>
+                        <div class="project-card-tags">
+                            <span class="tag tag-maroon">2025</span>
+                            <span class="tag tag-dark-pink">AI</span>
+                            <span class="tag tag-dark-pink">Data Science</span>
+                        </div>
+                        <p class="project-card-description">(Enter your real project description here!)</p>
+                        <a href="#" class="project-card-link">View Project &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- NEW: Project Card 5 (CSS Art) -->
+                <div class="project-card">
+                    <div class="project-card-image-wrapper bg-white">
+                        <!-- 
+                          PLACEHOLDER IMAGE: 
+                          Take a screenshot of your CSS Art Cat from CodePen!
+                        -->
+                        <img src="css art.png" alt="CSS Art Project">
+                    </div>
+                    <div class="project-card-content">
+                        <h3 class="project-card-title">CSS Art Challenges</h3>
+                        <div class="project-card-tags">
+                            <span class="tag tag-maroon">2024</span>
+                            <span class="tag tag-light-pink">HTML</span>
+                            <span class="tag tag-light-pink">CSS</span>
+                        </div>
+                        <p class="project-card-description">A collection of creative coding challenges, building visual art using only HTML and CSS. A fun exercise in applying design principles with code.</p>
+                        <a href="https://codepen.io/alaaanann" target="_blank" rel="noopener noreferrer" class="project-card-link">View on CodePen &rarr;</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+        <!-- Research Paper Section -->
+        <section id="papers" class="site-section">
+            <h2 class="section-title">Research Paper</h2>
+            <div class="paper-card-container">
+                <div class="paper-card">
+                    <h3 class="paper-card-title">'Fiction to Function': Shaping Renewable Energy Education with MATLAB and ChatGPT-Driven Environments</h3>
+                    <div class="paper-card-tags">
+                        <span class="tag tag-maroon">2024</span>
+                        <span class="tag tag-dark-pink">MATLAB</span>
+                        <span class="tag tag-dark-pink">IEEE</span>
+                        <span class="tag tag-dark-pink">MATLAB App Designer</span>
+                        <span class="tag tag-light-pink">Conference Paper</span>
+                        <span class="tag tag-light-pink">L&T</span>
+                    </div>
+                    <p class="paper-card-description">This paper presents the design and implementation of a comprehensive educational tool for wind energy. The application, developed in MATLAB with an integrated ChatGPT interface, provides an interactive platform for students and researchers to explore wind turbine optimization. It visualizes the complex relationships between wind speed, pitch angles, and power generation, bridging the gap between theoretical concepts and practical application.</p>
+                    <a href="https://ieeexplore.ieee.org/document/10469675" target="_blank" rel="noopener noreferrer" class="paper-card-link">
+                        View Paper &rarr;
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Me Section -->
+        <section id="contact" class="site-section">
+            <h2 class="section-title">Contact me</h2>
+            <div class="contact-content">
+                <div class="contact-image">
+                    <!-- 
+                      PLACEHOLDER IMAGE: 
+                      Replace this with your contact robot mascot image 
+                    -->
+                    <img src="https://placehold.co/400x400/FDF6EC/6D282C?text=Waving+Robot" alt="Mascot waving">
+                </div>
+                <div class="contact-grid-container">
+                    <div class="contact-grid">
                         
-                        const cropSize = 224.0 / scale;
+                        <!-- Email -->
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </div>
+                            <div class="contact-details">
+                                <h4 class="contact-title">Email</h4>
+                                <a href="mailto:alnaldybous@effat.edu.sa" class="contact-link">alnaldybous@effat.edu.sa</a>
+                            </div>
+                        </div>
 
-                        const cropX = (originalWidth - cropSize) / 2;
-                        const cropY = (originalHeight - cropSize) / 2;
+                        <!-- LinkedIn -->
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                            </div>
+                            <div class="contact-details">
+                                <h4 class="contact-title">LinkedIn</h4>
+                                <a href="https://www.linkedin.com/in/alaa-aldybous-1a381a2b3/" target="_blank" rel="noopener noreferrer" class="contact-link">linkedin.com/in/alaa-aldybous...</a>
+                            </div>
+                        </div>
 
-                        ctx.drawImage(imageElement, cropX, cropY, cropSize, cropSize, 0, 0, 224, 224);
-                        
-                        const imageData = ctx.getImageData(0, 0, 224, 224);
-                        const { data } = imageData;
-                        const float32Data = new Float32Array(3 * 224 * 224);
-                        
-                        const mean = [0.485, 0.456, 0.406];
-                        const std = [0.229, 0.224, 0.225];
+                        <!-- CV -->
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            </div>
+                            <div class="contact-details">
+                                <h4 class="contact-title">CV</h4>
+                                <a href="https://alaa-aldybous.notion.site/Alaa-Aldybous-30d64039f7e043949735d486cab81eea" target="_blank" rel="noopener noreferrer" class="contact-link">alaa-aldybous.notion.site/...</a>
+                            </div>
+                        </div>
 
-                        for (let i = 0; i < 224 * 224; i++) {
-                            float32Data[i] = (data[i * 4] / 255 - mean[0]) / std[0];
-                            float32Data[i + 224 * 224] = (data[i * 4 + 1] / 255 - mean[1]) / std[1];
-                            float32Data[i + 2 * 224 * 224] = (data[i * 4 + 2] / 255 - mean[2]) / std[2];
-                        }
-                        resolve(float32Data);
-                    } catch (error) { reject(error); }
-                };
-                imageElement.onerror = reject;
-                if (imageElement.complete && imageElement.naturalWidth > 0) {
-                    imageElement.onload();
-                }
+                        <!-- IEEE Profile -->
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
+                            </div>
+                            <div class="contact-details">
+                                <h4 class="contact-title">IEEE Profile</h4>
+                                <a href="https://ieeexplore.ieee.org/author/996408430174439" target="_blank" rel="noopener noreferrer" class="contact-link">ieeexplore.ieee.org/author/...</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Designed & Built by Alaa Aldybous</p>
+        <p class="footer-credit">Robot mascot art by [Your Artist's Name Here]</p>
+    </footer>
+
+        <!-- JavaScript for Mobile Menu Toggle -->
+    <script>
+        const menuButton = document.getElementById('mobile-menu-button');
+        const navLinks = document.getElementById('main-nav-links');
+
+        if (menuButton && navLinks) {
+            menuButton.addEventListener('click', () => {
+                navLinks.classList.toggle('is-open');
+            });
+
+            // Optional: Close menu when a link is clicked (good for single-page sites)
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('is-open');
+                });
             });
         }
-        
-        function displayResults(outputTensor) {
-            const probabilities = softmax(Array.from(outputTensor));
-            const maxIndex = probabilities.indexOf(Math.max(...probabilities));
-            const predictedClassName = CLASS_NAMES[maxIndex];
-
-            let status = "Diseased";
-            let details = predictedClassName.replace(/_/g, ' ').replace(' on lettuce', '');
-            let statusColor = "text-red-700";
-            
-            if (predictedClassName === 'Healthy') {
-                status = "Healthy";
-                details = "No disease detected.";
-                statusColor = "text-green-700";
-            } else if (predictedClassName === 'Shepherd_purse_weeds') {
-                status = "Not Lettuce";
-                details = "This appears to be a weed (Shepherd's purse).";
-                statusColor = "text-amber-800";
-            }
-
-            predictionStatus.innerText = status;
-            predictionStatus.className = `font-bold ${statusColor}`;
-            predictionDetails.innerText = details;
-            resultContainer.classList.remove('hidden');
-        }
-
-        function softmax(arr) {
-            const max = Math.max(...arr);
-            const exps = arr.map(x => Math.exp(x - max));
-            const sumExps = exps.reduce((a, b) => a + b);
-            return exps.map(x => x / sumExps);
-        }
-        
-        loadModel();
     </script>
+
 </body>
 </html>
 
